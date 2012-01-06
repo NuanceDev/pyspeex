@@ -1,0 +1,9 @@
+Speex Python Interface
+
+Installation
+
+    install or compile speex
+    pip install cython
+    make
+    CPPFLAGS="-I/path/to/speex/includes" LDFLAGS="-L/path/to/speex/lib" python setup.py install
+    
