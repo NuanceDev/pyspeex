@@ -3,7 +3,7 @@ from distutils.extension import Extension
 
 SPEEX = Extension("speex", 
                   ["speex.c"],
-                  libraries = ["speex"])
+                  libraries = ["speex", "speexdsp"])
 
 ext_modules = [SPEEX]
                       

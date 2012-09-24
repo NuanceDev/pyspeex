@@ -1,3 +1,10 @@
+cdef extern from "speex/speex_types.h":
+   ctypedef int spx_int16_t
+   ctypedef int spx_uint16_t
+   ctypedef int spx_int32_t
+   ctypedef int spx_uint32_t
+
+
 cdef extern from "speex/speex_bits.h":
     ctypedef struct SpeexBits:
         pass
@@ -23,11 +30,31 @@ cdef extern from "speex/speex_bits.h":
     void speex_bits_insert_terminator(SpeexBits*)
 
 
-cdef extern from "speex/speex_types.h":
-   ctypedef int spx_int16_t
-   ctypedef int spx_uint16_t
-   ctypedef int spx_int32_t
-   ctypedef int spx_uint32_t
+cdef extern from "speex/speex_header.h":
+    ctypedef struct SpeexMode:
+        pass
+
+    ctypedef struct _SpeexHeader "SpeexHeader":
+        char *speex_string
+        char *speex_version
+        spx_int32_t speex_version_id
+        spx_int32_t header_size
+        spx_int32_t rate
+        spx_int32_t mode
+        spx_int32_t mode_bitstream_version
+        spx_int32_t nb_channels
+        spx_int32_t bitrate
+        spx_int32_t frame_size
+        spx_int32_t vbr
+        spx_int32_t frames_per_packet
+        spx_int32_t extra_headers
+        spx_int32_t reserved1
+        spx_int32_t reserved2
+
+    void speex_init_header(_SpeexHeader*, int, int, SpeexMode*)
+    char *speex_header_to_packet(_SpeexHeader*, int*)
+    _SpeexHeader *speex_packet_to_header(char*, int)
+    void speex_header_free(void*)
 
 
 cdef extern from "speex/speex.h":
@@ -108,10 +135,10 @@ cdef extern from "speex/speex.h":
     int SPEEX_LIB_GET_EXTRA_VERSION
     int SPEEX_LIB_GET_VERSION_STRING
 
-    int SPEEX_NB_MODES
-    int SPEEX_MODEID_NB
-    int SPEEX_MODEID_WB
-    int SPEEX_MODEID_UWB
+    cdef int _SPEEX_NB_MODES "SPEEX_NB_MODES"
+    cdef int _SPEEX_MODEID_NB "SPEEX_MODEID_NB"
+    cdef int _SPEEX_MODEID_WB "SPEEX_MODEID_WB"
+    cdef int _SPEEX_MODEID_UWB "SPEEX_MODEID_UWB"
 
     ctypedef struct SpeexMode:
         pass
@@ -137,4 +164,53 @@ cdef extern from "speex/speex.h":
     extern SpeexMode speex_uwb_mode
     extern SpeexMode* speex_mode_list
     SpeexMode* speex_lib_get_mode(int)
+
+
+cdef extern from "speex/speex_resampler.h":
+    int SPEEX_RESAMPLER_QUALITY_MAX
+    int SPEEX_RESAMPLER_QUALITY_MIN
+    int SPEEX_RESAMPLER_QUALITY_DEFAULT
+    int SPEEX_RESAMPLER_QUALITY_VOIP
+    int SPEEX_RESAMPLER_QUALITY_DESKTOP
+
+    int RESAMPLER_ERR_SUCCESS
+    int RESAMPLER_ERR_ALLOC_FAILED
+    int RESAMPLER_ERR_BAD_STATE
+    int RESAMPLER_ERR_INVALID_ARG
+    int RESAMPLER_ERR_PTR_OVERLAP
+    int RESAMPLER_ERR_MAX_ERROR
+
+    ctypedef struct SpeexResamplerState:
+        pass
+
+    SpeexResamplerState *speex_resampler_init(spx_uint32_t, spx_uint32_t, spx_uint32_t, int, int *)
+    SpeexResamplerState *speex_resampler_init_frac(spx_uint32_t, spx_uint32_t, spx_uint32_t, spx_uint32_t, spx_uint32_t, int, int *)
+    void speex_resampler_destroy(SpeexResamplerState *)
+
+    int speex_resampler_process_float(SpeexResamplerState *, spx_uint32_t, float *, spx_uint32_t *, float *, spx_uint32_t *)
+    int speex_resampler_process_int(SpeexResamplerState *, spx_uint32_t, spx_int16_t *, spx_uint32_t *, spx_int16_t *, spx_uint32_t *)
+    int speex_resampler_process_interleaved_float(SpeexResamplerState *, float *, spx_uint32_t *, float *, spx_uint32_t *)
+    int speex_resampler_process_interleaved_int(SpeexResamplerState *, spx_int16_t *, spx_uint32_t *,spx_int16_t *, spx_uint32_t *)
+
+    int speex_resampler_set_rate(SpeexResamplerState *, spx_uint32_t, spx_uint32_t)
+    void speex_resampler_get_rate(SpeexResamplerState *, spx_uint32_t *, spx_uint32_t *)
+    int speex_resampler_set_rate_frac(SpeexResamplerState *, spx_uint32_t, spx_uint32_t, spx_uint32_t, spx_uint32_t)
+    void speex_resampler_get_ratio(SpeexResamplerState *, spx_uint32_t *, spx_uint32_t *)
+
+    int speex_resampler_set_quality(SpeexResamplerState *, int)
+    void speex_resampler_get_quality(SpeexResamplerState *, int *)
+
+    void speex_resampler_set_input_stride(SpeexResamplerState *, spx_uint32_t)
+    void speex_resampler_get_input_stride(SpeexResamplerState *, spx_uint32_t *)
+    void speex_resampler_set_output_stride(SpeexResamplerState *, spx_uint32_t)
+    void speex_resampler_get_output_stride(SpeexResamplerState *, spx_uint32_t *)
+
+    int speex_resampler_get_input_latency(SpeexResamplerState *)
+    int speex_resampler_get_output_latency(SpeexResamplerState *)
+
+    int speex_resampler_skip_zeros(SpeexResamplerState *)
+    
+    int speex_resampler_reset_mem(SpeexResamplerState *)
+
+    char *speex_resampler_strerror(int)
 
