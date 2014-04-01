@@ -224,7 +224,7 @@ cdef class SpeexDecoder(SpeexCoder):
     def decode(self, vocoded):
         frame_bytes = self.frame_size * 2
         cdef char* frame = <char*> malloc(frame_bytes)
-        pcm = ''
+        pcm = b''
         speex_bits_read_from(&self._bits, vocoded, len(vocoded));
         while speex_decode_int(self._state, &self._bits, <spx_int16_t*> frame) == 0:
             pcm += frame[:frame_bytes]
@@ -351,7 +351,7 @@ cdef class SpeexResampler(object):
     cdef _process_int(self, samples, channel = 0):
         cdef spx_uint32_t in_len, out_len, offset = 0
         cdef char *out_buf
-        resamples = ''
+        resamples = b''
 
         while offset < len(samples):
             in_len = (len(samples) - offset) / sizeof(spx_int16_t)
@@ -368,4 +368,3 @@ cdef class SpeexResampler(object):
             free(out_buf)
             
         return resamples
-
