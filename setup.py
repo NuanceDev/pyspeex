@@ -12,7 +12,9 @@ setup(
   description = 'Speex Python interface',
   author = 'Jeremy Slater',
   author_email = 'jasl8r@alum.wpi.edu',
+  maintainer = 'Thibault Cohen',
+  maintainer_email = 'titilambert@gmail.com',
   ext_modules = ext_modules,
-  version = '0.1.0',
+  version = '0.9.1',
   provides = ['speex']
 )
