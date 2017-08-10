@@ -8,10 +8,13 @@ SPEEX = Extension("speex",
 ext_modules = [SPEEX]
                       
 setup(
-  name = 'Speex',
+  name = 'speex',
   description = 'Speex Python interface',
   author = 'Jeremy Slater',
   author_email = 'jasl8r@alum.wpi.edu',
-  ext_modules = ext_modules
+  maintainer = 'Thibault Cohen',
+  maintainer_email = 'titilambert@gmail.com',
+  ext_modules = ext_modules,
+  version = '0.9.1',
+  provides = ['speex']
 )
-
